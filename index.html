@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Lesson: The Magic of Cloning</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#5E48C4',
+                            purpleDark: '#4A3AAD',
+                            purpleMid: '#7B6ED4',
+                            purplePale: '#EAE7FE',
+                            purpleGhost: '#F5F4FF',
+                            yellow: '#FFD071',
+                            yellowDark: '#E6B84A',
+                            nearBlack: '#1A1A1A',
+                            lightGrey: '#F2F2F4',
+                            cyan: '#59E4FB',
+                            cyanDark: '#055F6E',
+                            coral: '#ED5661',
+                            coralDark: '#993040'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F5F4FF;
+            color: #1A1A1A;
+            user-select: none;
+        }
+
+        .yellow-highlight {
+            position: relative;
+            display: inline-block;
+        }
+
+        .yellow-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #FFD071;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* =========================
+           T-SHIRT ANIMATION
+        ========================= */
+
+        .shirt-card {
+            width: 92px;
+            padding: 7px 5px;
+            border-radius: 14px;
+            background: white;
+            border: 2px solid #7B6ED4;
+            box-shadow: 0 5px 12px rgba(94,72,196,0.14);
+            text-align: center;
+            transition: all 0.35s ease;
+        }
+
+        .shirt-icon {
+            font-size: 42px;
+            line-height: 1;
+        }
+
+        .shirt-name {
+            margin-top: 4px;
+            font-size: 8px;
+            font-weight: 800;
+            color: #5E48C4;
+        }
+
+        .shirt-copy {
+            animation: shirtPop 0.55s ease-out forwards;
+        }
+
+        @keyframes shirtPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateY(20px);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.12) translateY(-4px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        header {
+    width: 100%;
+    background: #5E48C4;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 10px #00000012;
+}
+.logo {
+    background: #FFD071;
+    color: #1A1A1A;
+    padding: 9px 15px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-title {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: #4A3AAD;
+    border: none;
+    color: white;
+    padding: 9px 12px;
+    border-radius: 10px;
+}
+main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+        /* =========================
+           SCRATCH STYLE BLOCKS
+        ========================= */
+
+        .scratch-block {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            min-height: 42px;
+            padding: 8px 14px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 7px;
+            box-shadow:
+                inset 0 -3px rgba(0,0,0,0.12),
+                0 3px 5px rgba(0,0,0,0.12);
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .scratch-block:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .scratch-block:active {
+            transform: translateY(2px);
+        }
+
+        /* Scratch event blocks */
+        .scratch-yellow {
+            background: #FFBF00;
+        }
+
+        /* Scratch control blocks */
+        .scratch-orange {
+            background: #FFAB19;
+        }
+
+        /* Scratch looks blocks */
+        .scratch-purple {
+            background: #9966FF;
+        }
+
+        /* Scratch variables blocks */
+        .scratch-orange-dark {
+            background: #FF8C1A;
+        }
+
+        .scratch-c-block {
+            background: #FFAB19;
+            border-radius: 7px;
+            padding: 9px 12px;
+        }
+
+        .scratch-c-inner {
+            background: white;
+            border-radius: 6px;
+            padding: 7px;
+            margin-top: 6px;
+            color: #555;
+        }
+
+        .scratch-dropdown {
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 5px;
+            padding: 2px 6px;
+            margin: 0 3px;
+        }
+
+        .scratch-block-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        .scratch-block-stack .scratch-block {
+            border-radius: 0 7px 7px 0;
+        }
+
+        .scratch-block-stack .scratch-block:first-child {
+            border-radius: 7px 7px 4px 4px;
+        }
+
+        .scratch-block-stack .scratch-block:last-child {
+            border-radius: 4px 4px 7px 7px;
+        }
+
+        .scratch-block-stack .scratch-block:not(:first-child) {
+            margin-top: -1px;
+        }
+
+        /* =========================
+           SLIDE 3 CLONE GAME
+        ========================= */
+
+        .clone-stage {
+            position: relative;
+            height: 210px;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #F5F4FF;
+            border: 2px dashed #7B6ED4;
+        }
+
+        .clone-apple {
+            position: absolute;
+            font-size: 30px;
+            transition: all 0.5s ease;
+        }
+
+        .clone-pop {
+            animation: clonePop 0.45s ease-out;
+        }
+
+        @keyframes clonePop {
+            0% {
+                opacity: 0;
+                transform: scale(0.2);
+            }
+            70% {
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .choice-selected {
+            transform: scale(1.03);
+            border-color: #5E48C4 !important;
+            box-shadow: 0 0 0 3px #EAE7FE;
+        }
+
+        /* =========================
+           SLIDE 5 SIMULATOR
+        ========================= */
+
+        .sim-apple {
+            position: absolute;
+            font-size: 25px;
+            line-height: 1;
+            z-index: 2;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .sim-apple.spawn {
+            animation: appleSpawn 0.35s ease-out;
+        }
+
+        .sim-apple.deleted {
+            animation: appleDelete 0.3s ease-in forwards;
+        }
+
+        @keyframes appleSpawn {
+            from {
+                opacity: 0;
+                transform: scale(0.2);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes appleDelete {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.15) translateY(5px);
+            }
+        }
+
+        /* =========================
+           QUIZ FEEDBACK
+        ========================= */
+
+        .quiz-feedback {
+            min-height: 28px;
+            transition: all 0.2s ease;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1A1A1A;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #5E48C4;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header>
+    <div class="header-left">
+        <div class="logo">ALPHAGEN LEARNING</div>
+        <div class="header-title">Scratch - Game Based Learning</div>
+    </div>
+
+    <div class="header-right">
+        <button class="icon-btn" id="soundBtn" onclick="toggleSound()">
+            <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <div class="counter" id="slideCounter">1 / 6</div>
+    </div>
+</header>
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="flex-1 relative flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+
+        <!-- =========================
+             SLIDE 1
+        ========================= -->
+
+        <section id="slide-1"
+            class="slide active flex-col items-center justify-center max-w-3xl mx-auto w-full">
+
+            <div class="w-24 h-24 sm:w-32 sm:h-32 bg-brand-purplePale rounded-full flex items-center justify-center mb-6 shadow-inner relative animate-bounce">
+                <span class="text-5xl sm:text-6xl">🍎</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-brand-nearBlack mb-4 leading-tight">
+                The Magic of
+                <span class="text-brand-purple yellow-highlight">Cloning!</span>
+            </h1>
+
+         
+
+            <button onclick="nextSlide()"
+                class="bg-brand-yellow hover:bg-brand-yellowDark text-brand-nearBlack font-bold text-lg px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-200 flex items-center space-x-3">
+
+                <span>Let's Explore!</span>
+                <span class="text-xl">✨</span>
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             SLIDE 2
+        ========================= -->
+
+        <section id="slide-2"
+            class="slide flex-col items-center justify-center max-w-4xl mx-auto w-full">
+
+            <div class="text-center mb-4">
+                <span class="text-brand-purple font-semibold text-xs uppercase tracking-widest">
+                    Think About This
+                </span>
+
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-nearBlack">
+                    One Design → Many Shirts
+                </h2>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-2 border-brand-purplePale shadow-md w-full max-w-2xl">
+
+                <p class="text-sm text-gray-600 text-center mb-4">
+                    Same design. Different kid.
+                </p>
+
+                <div id="shirt-stage"
+                    class="relative bg-brand-purpleGhost rounded-2xl border border-brand-purpleMid/30 h-48 overflow-hidden flex items-center justify-center">
+
+                    <div id="shirt-master"
+                        class="shirt-card absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+
+                        <div class="shirt-icon">👕</div>
+                        <div class="shirt-name">MASTER</div>
+
+                    </div>
+
+                    <div id="shirt-copy-1"
+                        class="shirt-card shirt-copy hidden absolute">
+
+                        <div class="shirt-icon">👕</div>
+                        <div class="shirt-name">KID 1</div>
+
+                    </div>
+
+                    <div id="shirt-copy-2"
+                        class="shirt-card shirt-copy hidden absolute">
+
+                        <div class="shirt-icon">👕</div>
+                        <div class="shirt-name">KID 2</div>
+
+                    </div>
+
+                    <div id="shirt-copy-3"
+                        class="shirt-card shirt-copy hidden absolute">
+
+                        <div class="shirt-icon">👕</div>
+                        <div class="shirt-name">KID 3</div>
+
+                    </div>
+
+                    <div id="shirt-caption"
+                        class="absolute bottom-2 left-0 right-0 text-[10px] font-bold text-brand-purple text-center">
+
+                        Click to make a copy!
+
+                    </div>
+
+                </div>
+
+                <div class="flex justify-center gap-2 mt-4">
+
+                    <button onclick="createShirtCopy()"
+                        class="bg-brand-yellow hover:bg-brand-yellowDark text-brand-nearBlack font-bold px-6 py-2.5 rounded-xl text-xs sm:text-sm transition shadow">
+
+                        Make a Copy
+
+                    </button>
+
+                    <button onclick="resetShirts()"
+                        class="bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+                <p id="shirt-explanation"
+                    class="mt-3 text-xs text-gray-500 text-center">
+
+                    One design can become many!
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SLIDE 3
+        ========================= -->
+
+        <section id="slide-3"
+            class="slide flex-col items-center justify-center max-w-4xl mx-auto w-full">
+
+            <div class="text-center mb-4">
+
+                <span class="text-brand-purple font-semibold text-xs uppercase tracking-widest">
+                    Try It
+                </span>
+
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-nearBlack">
+                    Need 10 Apples?
+                </h2>
+
+                <p class="text-xs text-gray-500 mt-1">
+                    Click the button!
+                </p>
+
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-2 border-brand-purplePale shadow-md w-full max-w-2xl">
+
+                <div id="clone-stage" class="clone-stage">
+
+                    <div class="absolute bottom-0 left-0 right-0 h-2 bg-brand-purpleMid/40"></div>
+
+                    <div id="clone-count"
+                        class="absolute top-2 left-2 bg-white px-3 py-1 rounded-lg text-xs font-bold text-brand-purple shadow">
+                        Apples: 0
+                    </div>
+
+                </div>
+
+                <div class="flex justify-center gap-2 mt-4">
+
+                    <button onclick="makeClone()"
+                        class="bg-brand-purple hover:bg-brand-purpleDark text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow">
+
+                        🍎 Make an Apple
+
+                    </button>
+
+                    <button onclick="makeManyClones()"
+                        class="bg-brand-yellow hover:bg-brand-yellowDark text-brand-nearBlack font-bold px-6 py-2.5 rounded-xl text-xs shadow">
+
+                        Make 5!
+
+                    </button>
+
+                    <button onclick="resetCloneGame()"
+                        class="bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold px-4 py-2.5 rounded-xl text-xs">
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+                <div id="clone-feedback"
+                    class="text-center text-xs font-bold text-brand-purple mt-3 min-h-[18px]">
+
+                    One apple → many copies!
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SLIDE 4
+        ========================= -->
+
+        <section id="slide-4"
+            class="slide flex-col items-center justify-center max-w-4xl mx-auto w-full">
+
+            <div class="text-center mb-4">
+
+                <span class="text-brand-purple font-semibold text-xs uppercase tracking-widest">
+                    Scratch Blocks
+                </span>
+
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-nearBlack">
+                    The 3 Magic Blocks
+                </h2>
+
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border-2 border-brand-purplePale shadow-sm w-full max-w-3xl">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                    <!-- Block 1 -->
+
+                    <div class="flex flex-col items-center text-center">
+
+                        <div class="scratch-block scratch-orange-dark">
+                            create clone of
+                            <span class="scratch-dropdown">
+                                myself ▼
+                            </span>
+                        </div>
+
+                        <h3 class="font-bold text-brand-purple text-sm mt-3">
+                            Make a copy
+                        </h3>
+
+                        <p class="text-[11px] text-gray-500 mt-1">
+                            Creates a new clone.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Block 2 -->
+
+                    <div class="flex flex-col items-center text-center">
+
+                        <div class="scratch-block scratch-yellow">
+                            when I start as a clone
+                        </div>
+
+                        <div class="scratch-block scratch-purple mt-1">
+                            go to random position
+                        </div>
+
+                        <h3 class="font-bold text-brand-purple text-sm mt-3">
+                            Start the clone
+                        </h3>
+
+                        <p class="text-[11px] text-gray-500 mt-1">
+                            Tells the clone what to do.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Block 3 -->
+
+                    <div class="flex flex-col items-center text-center">
+
+                        <div class="scratch-block scratch-orange">
+                            delete this clone
+                        </div>
+
+                        <h3 class="font-bold text-brand-purple text-sm mt-3">
+                            Remove it
+                        </h3>
+
+                        <p class="text-[11px] text-gray-500 mt-1">
+                            Removes the clone.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-6 bg-brand-purpleGhost rounded-xl p-3 text-center">
+
+                    <p class="text-xs font-bold text-brand-purple">
+                        Create → Start → Delete
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SLIDE 5
+        ========================= -->
+
+        <section id="slide-5"
+            class="slide flex-col items-center justify-center max-w-4xl mx-auto w-full">
+
+            <div class="text-center mb-2">
+
+                <span class="text-brand-purple font-semibold text-xs uppercase tracking-widest">
+                    Build It
+                </span>
+
+                <h2 class="text-xl sm:text-2xl font-bold text-brand-nearBlack">
+                    Build the Falling Apple Code
+                </h2>
+
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl items-center">
+
+                <!-- LEFT -->
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-brand-purplePale shadow-sm">
+
+                    <span class="text-xs font-bold text-brand-purple block mb-3">
+                        Click the blocks in order
+                    </span>
+
+                    <div class="flex flex-col gap-2">
+
+                        <!-- REAL-STYLE BLOCK 1 -->
+
+                        <button onclick="testStep(1)"
+                            class="text-left">
+
+                            <div class="scratch-block scratch-orange-dark w-full">
+                                create clone of
+                                <span class="scratch-dropdown">
+                                    myself ▼
+                                </span>
+                            </div>
+
+                        </button>
+
+
+                        <!-- REAL-STYLE BLOCK 2 -->
+
+                        <button onclick="testStep(2)"
+                            class="text-left">
+
+                            <div class="scratch-block scratch-yellow w-full">
+                                when I start as a clone
+                            </div>
+
+                            <div class="scratch-block scratch-purple w-full mt-0.5">
+                                change y by -1
+                            </div>
+
+                        </button>
+
+
+                        <!-- REAL-STYLE BLOCK 3 -->
+
+                        <button onclick="testStep(3)"
+                            class="text-left">
+
+                            <div class="scratch-block scratch-orange w-full">
+                                delete this clone
+                            </div>
+
+                        </button>
+
+                    </div>
+
+                    <div class="flex gap-2 mt-4">
+
+                        <button onclick="resetAppleSimulator()"
+                            class="flex-1 bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold text-xs p-2 rounded-xl">
+
+                            Reset
+
+                        </button>
+
+                        <button onclick="runAllAppleBlocks()"
+                            class="flex-1 bg-brand-purple hover:bg-brand-purpleDark text-white font-bold text-xs p-2 rounded-xl shadow">
+
+                            Run All
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT -->
+
+                <div class="bg-white p-4 rounded-2xl border-2 border-brand-purplePale shadow-sm flex flex-col items-center text-center">
+
+                    <span class="text-xs font-bold text-gray-500 mb-2">
+                        Stage
+                    </span>
+
+                    <div id="sim-stage"
+                        class="bg-brand-purpleGhost h-48 w-full rounded-xl border-2 border-dashed border-brand-purpleMid relative overflow-hidden">
+
+                        <div class="absolute bottom-0 w-full h-2 bg-brand-purpleMid/40"></div>
+
+                        <div class="absolute bottom-2 left-2 right-2 text-[9px] font-bold text-gray-400">
+                            GROUND
+                        </div>
+
+                        <span id="sim-message"
+                            class="absolute inset-0 flex items-center justify-center text-xs text-gray-400 font-semibold p-2 text-center">
+
+                            Click block 1 to create apple clones.
+
+                        </span>
+
+                    </div>
+
+                    <div id="sim-status"
+                        class="mt-2 text-[10px] font-bold text-brand-purple min-h-[15px]">
+
+                        No clones yet
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SLIDE 6
+        ========================= -->
+
+        <section id="slide-6"
+            class="slide flex-col items-center justify-center max-w-4xl mx-auto w-full">
+
+            <div class="text-center mb-4">
+
+                <span class="text-brand-purple font-semibold text-xs uppercase tracking-widest">
+                    Brain Test
+                </span>
+
+                <h2 class="text-2xl sm:text-3xl font-bold text-brand-nearBlack">
+                    Why Delete the Clone?
+                </h2>
+
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border-2 border-brand-purplePale shadow-sm w-full text-center max-w-xl">
+
+                <div class="text-4xl mb-3">
+                    🍎
+                </div>
+
+                <h3 class="font-bold text-sm sm:text-base text-brand-nearBlack mb-4">
+                    What happens when an apple reaches the ground?
+                </h3>
+
+                <div class="flex flex-col gap-2.5 max-w-md mx-auto">
+
+                    <button onclick="checkQuiz(true)"
+                        class="bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold p-3 rounded-xl text-xs transition">
+
+                        The apple is removed.
+
+                    </button>
+
+                    <button onclick="checkQuiz(false)"
+                        class="bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold p-3 rounded-xl text-xs transition">
+
+                        The apple flies back up.
+
+                    </button>
+
+                </div>
+
+                <div id="quiz-feedback"
+                    class="quiz-feedback mt-4 text-xs font-bold">
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer class="bg-white border-t border-gray-200 px-6 py-3 flex justify-between items-center z-10">
+
+        <button id="btn-prev"
+            onclick="prevSlide()"
+            class="bg-gray-100 hover:bg-gray-200 text-brand-nearBlack font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition flex items-center space-x-1">
+
+            <span>⬅️</span>
+            <span>Previous</span>
+
+        </button>
+
+
+        <select id="slide-jump"
+            onchange="jumpToSlide(this.value)"
+            class="bg-brand-purpleGhost border border-brand-purpleMid text-brand-purple text-xs font-bold px-3 py-2 rounded-xl focus:outline-none">
+
+            <option value="1">1. Welcome</option>
+            <option value="2">2. T-Shirt Analogy</option>
+            <option value="3">3. Why Cloning?</option>
+            <option value="4">4. Scratch Blocks</option>
+            <option value="5">5. Build the Code</option>
+            <option value="6">6. Brain Test</option>
+
+        </select>
+
+
+        <button id="btn-next"
+            onclick="nextSlide()"
+            class="bg-brand-purple hover:bg-brand-purpleDark text-white font-bold px-5 py-2 rounded-xl text-xs sm:text-sm transition flex items-center space-x-1 shadow">
+
+            <span>Next</span>
+            <span>➡</span>
+
+        </button>
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        let currentSlide = 1;
+        const totalSlides = 6;
+
+
+        /* =========================
+           AUDIO
+        ========================= */
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        let soundEnabled = true;
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.querySelector('#soundBtn i').className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        }
+        function playSessionSound() {
+            if (!soundEnabled) return;
+
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.type = 'triangle';
+
+            osc.frequency.setValueAtTime(
+                400,
+                audioCtx.currentTime
+            );
+
+            gain.gain.setValueAtTime(
+                0.05,
+                audioCtx.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioCtx.currentTime + 0.05
+            );
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+
+        /* =========================
+           NAVIGATION
+        ========================= */
+
+        function updateSlide() {
+
+            document.querySelectorAll('.slide').forEach((slide, idx) => {
+
+                slide.classList.remove('active');
+
+                if (idx + 1 === currentSlide) {
+                    slide.classList.add('active');
+                }
+
+            });
+
+            document.getElementById('slideCounter').innerText =
+                currentSlide + ' / ' + totalSlides;
+
+            document.getElementById('slide-jump').value =
+                currentSlide;
+
+            document.getElementById('btn-prev').style.visibility =
+                currentSlide === 1 ? 'hidden' : 'visible';
+
+            document.getElementById('btn-next').style.visibility =
+                currentSlide === totalSlides ? 'hidden' : 'visible';
+        }
+
+
+        function nextSlide() {
+
+            if (currentSlide < totalSlides) {
+
+                playSessionSound();
+
+                currentSlide++;
+
+                updateSlide();
+
+            }
+        }
+
+
+        function prevSlide() {
+
+            if (currentSlide > 1) {
+
+                playSessionSound();
+
+                currentSlide--;
+
+                updateSlide();
+
+            }
+        }
+
+
+        function jumpToSlide(num) {
+
+            playSessionSound();
+
+            currentSlide = parseInt(num);
+
+            updateSlide();
+
+        }
+
+
+        /* =========================
+           SLIDE 2
+           SHIRT CLONING
+        ========================= */
+
+        let shirtCopies = 0;
+
+        function createShirtCopy() {
+
+            playSessionSound();
+
+            if (shirtCopies >= 3) {
+
+                document.getElementById('shirt-explanation').innerText =
+                    'You made 3 copies!';
+
+                return;
+            }
+
+            shirtCopies++;
+
+            const copy =
+                document.getElementById(
+                    `shirt-copy-${shirtCopies}`
+                );
+
+            const positions = [
+
+                {
+                    left: '20%',
+                    top: '30%'
+                },
+
+                {
+                    left: '50%',
+                    top: '22%'
+                },
+
+                {
+                    left: '80%',
+                    top: '30%'
+                }
+
+            ];
+
+            copy.classList.remove('hidden');
+
+            copy.style.left =
+                positions[shirtCopies - 1].left;
+
+            copy.style.top =
+                positions[shirtCopies - 1].top;
+
+            copy.style.transform =
+                'translateX(-50%)';
+
+            copy.style.animation = 'none';
+
+            void copy.offsetWidth;
+
+            copy.style.animation =
+                'shirtPop 0.55s ease-out forwards';
+
+            document.getElementById(
+                'shirt-explanation'
+            ).innerText =
+                `Copy ${shirtCopies} created!`;
+
+            if (shirtCopies === 3) {
+
+                document.getElementById(
+                    'shirt-caption'
+                ).innerText =
+                    'One design → many shirts!';
+
+            }
+        }
+
+
+        function resetShirts() {
+
+            playSessionSound();
+
+            shirtCopies = 0;
+
+            [1, 2, 3].forEach(i => {
+
+                const copy =
+                    document.getElementById(
+                        `shirt-copy-${i}`
+                    );
+
+                copy.classList.add('hidden');
+
+                copy.style.animation = '';
+
+            });
+
+            document.getElementById(
+                'shirt-caption'
+            ).innerText =
+                'Click to make a copy!';
+
+            document.getElementById(
+                'shirt-explanation'
+            ).innerText =
+                'One design can become many!';
+
+        }
+
+
+        /* =========================
+           SLIDE 3
+           INTERACTIVE CLONING
+        ========================= */
+
+        let cloneCount = 0;
+
+        function makeClone() {
+
+            playSessionSound();
+
+            const stage =
+                document.getElementById('clone-stage');
+
+            const apple =
+                document.createElement('div');
+
+            apple.className =
+                'clone-apple clone-pop';
+
+            apple.innerText = '🍎';
+
+            apple.style.left =
+                `${8 + Math.random() * 84}%`;
+
+            apple.style.top =
+                `${25 + Math.random() * 55}%`;
+
+            stage.appendChild(apple);
+
+            cloneCount++;
+
+            document.getElementById(
+                'clone-count'
+            ).innerText =
+                `Apples: ${cloneCount}`;
+
+            document.getElementById(
+                'clone-feedback'
+            ).innerText =
+                cloneCount === 1
+                    ? 'Now make another copy!'
+                    : `${cloneCount} apples from one idea!`;
+
+            if (cloneCount >= 10) {
+
+                document.getElementById(
+                    'clone-feedback'
+                ).innerText =
+                    '10 apples! That is the power of cloning!';
+
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: {
+                        y: 0.65
+                    }
+                });
+
+            }
+        }
+
+
+        function makeManyClones() {
+
+            playSessionSound();
+
+            for (let i = 0; i < 5; i++) {
+
+                setTimeout(() => {
+
+                    makeClone();
+
+                }, i * 120);
+
+            }
+
+        }
+
+
+        function resetCloneGame() {
+
+            playSessionSound();
+
+            cloneCount = 0;
+
+            document
+                .querySelectorAll('.clone-apple')
+                .forEach(apple => apple.remove());
+
+            document.getElementById(
+                'clone-count'
+            ).innerText =
+                'Apples: 0';
+
+            document.getElementById(
+                'clone-feedback'
+            ).innerText =
+                'One apple → many copies!';
+
+        }
+
+
+        /* =========================
+           SLIDE 5
+           APPLE SIMULATOR
+        ========================= */
+
+        let appleCloneId = 0;
+        let simulatorStep = 0;
+        let fallingEnabled = false;
+        let deleteEnabled = false;
+        let activeAppleAnimations = [];
+
+
+        function clearAppleAnimations() {
+
+            activeAppleAnimations.forEach(
+                id => cancelAnimationFrame(id)
+            );
+
+            activeAppleAnimations = [];
+
+        }
+
+
+        function prepareStage() {
+
+            clearAppleAnimations();
+
+            const stage =
+                document.getElementById('sim-stage');
+
+            stage.innerHTML = `
+                <div class="absolute bottom-0 w-full h-2 bg-brand-purpleMid/40"></div>
+                <div class="absolute bottom-2 left-2 right-2 text-[9px] font-bold text-gray-400">
+                    GROUND
+                </div>
+            `;
+
+            return stage;
+        }
+
+
+        function showStageMessage(text) {
+
+            const old =
+                document.getElementById('sim-message');
+
+            if (old) old.remove();
+
+            const message =
+                document.createElement('span');
+
+            message.id = 'sim-message';
+
+            message.className =
+                'absolute inset-0 flex items-center justify-center text-xs text-gray-400 font-semibold p-2 text-center pointer-events-none';
+
+            message.innerText = text;
+
+            document
+                .getElementById('sim-stage')
+                .appendChild(message);
+        }
+
+
+        function createAppleClone(stage, xPercent) {
+
+            appleCloneId++;
+
+            const apple =
+                document.createElement('div');
+
+            apple.className =
+                'sim-apple spawn';
+
+            apple.textContent = '🍎';
+
+            apple.dataset.cloneId =
+                appleCloneId;
+
+            apple.dataset.y = '8';
+
+            apple.style.left =
+                `${xPercent}%`;
+
+            apple.style.top =
+                '8px';
+
+            stage.appendChild(apple);
+
+            updateSimulatorStatus(
+                `Clone #${appleCloneId} created`
+            );
+        }
+
+
+        function startCloneFalling(apple) {
+
+            if (
+                !apple.isConnected ||
+                apple.dataset.falling === 'true'
+            ) {
+                return;
+            }
+
+            apple.dataset.falling = 'true';
+
+            let y =
+                parseFloat(
+                    apple.dataset.y || '8'
+                );
+
+            let lastTime =
+                performance.now();
+
+
+            function fall(now) {
+
+                if (!apple.isConnected) return;
+
+                const delta =
+                    Math.min(
+                        (now - lastTime) / 16.67,
+                        2
+                    );
+
+                lastTime = now;
+
+                y += 1.25 * delta;
+
+                const groundY =
+                    document.getElementById(
+                        'sim-stage'
+                    ).clientHeight - 39;
+
+
+                if (y >= groundY) {
+
+                    y = groundY;
+
+                    apple.dataset.y = y;
+
+                    apple.style.top =
+                        `${y}px`;
+
+                    updateSimulatorStatus(
+                        `Clone #${apple.dataset.cloneId} landed`
+                    );
+
+                    return;
+                }
+
+
+                apple.dataset.y = y;
+
+                apple.style.top =
+                    `${y}px`;
+
+                const frame =
+                    requestAnimationFrame(fall);
+
+                activeAppleAnimations.push(frame);
+            }
+
+
+            const frame =
+                requestAnimationFrame(fall);
+
+            activeAppleAnimations.push(frame);
+
+        }
+
+
+        function startAllClonesFalling() {
+
+            const stage =
+                document.getElementById('sim-stage');
+
+            const apples =
+                [
+                    ...stage.querySelectorAll(
+                        '.sim-apple'
+                    )
+                ];
+
+            if (apples.length === 0) {
+
+                updateSimulatorStatus(
+                    'Create a clone first!'
+                );
+
+                return;
+            }
+
+            fallingEnabled = true;
+
+            apples.forEach(
+                apple => startCloneFalling(apple)
+            );
+
+            updateSimulatorStatus(
+                `${apples.length} clone${apples.length > 1 ? 's' : ''} falling!`
+            );
+        }
+
+
+        function deleteAllClones() {
+
+            const stage =
+                document.getElementById('sim-stage');
+
+            const apples =
+                [
+                    ...stage.querySelectorAll(
+                        '.sim-apple'
+                    )
+                ];
+
+            if (apples.length === 0) {
+
+                updateSimulatorStatus(
+                    'No clones to delete.'
+                );
+
+                return;
+            }
+
+            deleteEnabled = true;
+
+            apples.forEach(apple => {
+
+                apple.classList.remove('spawn');
+
+                apple.classList.add('deleted');
+
+                setTimeout(() => {
+
+                    if (apple.isConnected) {
+                        apple.remove();
+                    }
+
+                    updateSimulatorStatus();
+
+                }, 280);
+
+            });
+
+            updateSimulatorStatus(
+                `${apples.length} clone${apples.length > 1 ? 's' : ''} deleted!`
+            );
+        }
+
+
+        function updateSimulatorStatus(message) {
+
+            const stage =
+                document.getElementById('sim-stage');
+
+            const apples =
+                stage.querySelectorAll(
+                    '.sim-apple'
+                ).length;
+
+            const status =
+                document.getElementById(
+                    'sim-status'
+                );
+
+            if (message) {
+
+                status.innerText =
+                    message;
+
+            } else {
+
+                status.innerText =
+                    apples
+                        ? `${apples} clone${apples > 1 ? 's' : ''} on stage`
+                        : 'No active clones';
+
+            }
+
+        }
+
+
+        function testStep(stepNum) {
+
+            playSessionSound();
+
+            const stage =
+                document.getElementById('sim-stage');
+
+            const message =
+                document.getElementById(
+                    'sim-message'
+                );
+
+            if (message) {
+                message.remove();
+            }
+
+
+            /* STEP 1 */
+
+            if (stepNum === 1) {
+
+                simulatorStep = 1;
+
+                const x =
+                    8 + Math.random() * 84;
+
+                createAppleClone(
+                    stage,
+                    x
+                );
+
+                updateSimulatorStatus(
+                    `Clone #${appleCloneId} created`
+                );
+
+                return;
+            }
+
+
+            /* STEP 2 */
+
+            if (stepNum === 2) {
+
+                simulatorStep = 2;
+
+                startAllClonesFalling();
+
+                setTimeout(() => {
+
+                    if (
+                        stage.querySelectorAll(
+                            '.sim-apple'
+                        ).length > 0
+                    ) {
+
+                        updateSimulatorStatus(
+                            'Clones fall and stay on the ground.'
+                        );
+
+                    }
+
+                }, 450);
+
+                return;
+            }
+
+
+            /* STEP 3 */
+
+            if (stepNum === 3) {
+
+                simulatorStep = 3;
+
+                deleteAllClones();
+
+                return;
+            }
+
+        }
+
+
+        function runAllAppleBlocks() {
+
+            playSessionSound();
+
+            clearAppleAnimations();
+
+            appleCloneId = 0;
+
+            simulatorStep = 0;
+
+            fallingEnabled = false;
+
+            deleteEnabled = false;
+
+            const stage =
+                prepareStage();
+
+            showStageMessage(
+                'Running the blocks...'
+            );
+
+            document.getElementById(
+                'sim-status'
+            ).innerText =
+                'Creating clones...';
+
+
+            const spawnPositions =
+                [15, 35, 55, 75, 88];
+
+
+            spawnPositions.forEach(
+                (x, index) => {
+
+                    setTimeout(() => {
+
+                        createAppleClone(
+                            stage,
+                            x
+                        );
+
+                        if (
+                            index ===
+                            spawnPositions.length - 1
+                        ) {
+
+                            updateSimulatorStatus(
+                                'Clones created!'
+                            );
+
+                        }
+
+                    }, index * 180);
+
+                }
+            );
+
+
+            setTimeout(() => {
+
+                const message =
+                    document.getElementById(
+                        'sim-message'
+                    );
+
+                if (message) {
+                    message.remove();
+                }
+
+                simulatorStep = 2;
+
+                fallingEnabled = true;
+
+                [
+                    ...stage.querySelectorAll(
+                        '.sim-apple'
+                    )
+                ].forEach(
+                    apple =>
+                        startCloneFalling(apple)
+                );
+
+                updateSimulatorStatus(
+                    'Clones are falling!'
+                );
+
+            }, 1150);
+
+
+            setTimeout(() => {
+
+                simulatorStep = 3;
+
+                deleteEnabled = true;
+
+                const apples =
+                    [
+                        ...stage.querySelectorAll(
+                            '.sim-apple'
+                        )
+                    ];
+
+                apples.forEach(apple => {
+
+                    apple.classList.remove(
+                        'spawn'
+                    );
+
+                    apple.classList.add(
+                        'deleted'
+                    );
+
+                    setTimeout(() => {
+
+                        if (
+                            apple.isConnected
+                        ) {
+                            apple.remove();
+                        }
+
+                    }, 280);
+
+                });
+
+                updateSimulatorStatus(
+                    'Deleting the clones!'
+                );
+
+
+                setTimeout(() => {
+
+                    updateSimulatorStatus(
+                        'Create → Fall → Delete!'
+                    );
+
+                    confetti({
+                        particleCount: 80,
+                        spread: 60,
+                        origin: {
+                            y: 0.7
+                        }
+                    });
+
+                }, 600);
+
+            }, 3100);
+
+        }
+
+
+        function resetAppleSimulator() {
+
+            playSessionSound();
+
+            clearAppleAnimations();
+
+            appleCloneId = 0;
+
+            simulatorStep = 0;
+
+            fallingEnabled = false;
+
+            deleteEnabled = false;
+
+            const stage =
+                prepareStage();
+
+            showStageMessage(
+                'Click block 1 to create apple clones.'
+            );
+
+            document.getElementById(
+                'sim-status'
+            ).innerText =
+                'No clones yet';
+
+        }
+
+
+        /* =========================
+           SLIDE 6 QUIZ
+        ========================= */
+
+        function checkQuiz(isCorrect) {
+
+            playSessionSound();
+
+            const feedback =
+                document.getElementById(
+                    'quiz-feedback'
+                );
+
+            if (isCorrect) {
+
+                feedback.innerText =
+                    'Correct! Clones can be removed when they are no longer needed.';
+
+                feedback.className =
+                    'quiz-feedback mt-4 text-xs font-bold text-brand-purple';
+
+                confetti({
+                    particleCount: 120,
+                    spread: 75,
+                    origin: {
+                        y: 0.65
+                    }
+                });
+
+            } else {
+
+                feedback.innerText =
+                    'Not quite. Try again!';
+
+                feedback.className =
+                    'quiz-feedback mt-4 text-xs font-bold text-brand-coral';
+
+            }
+
+        }
+
+
+        /* =========================
+           INITIALIZE
+        ========================= */
+
+        updateSlide();
+
+    </script>
+
+</body>
+</html>
